@@ -1,0 +1,179 @@
+
+<%- include('../layout/header', { title: title }) %>
+
+<div class="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50 to-indigo-100 py-10 px-4">
+
+    <!-- Header -->
+    <div class="max-w-5xl mx-auto bg-white/90 backdrop-blur shadow-xl rounded-3xl px-8 py-6 flex flex-col md:flex-row md:items-center md:justify-between border border-gray-100 mb-10">
+        <div>
+            <h1 class="text-3xl font-extrabold text-gray-800 tracking-tight">
+                 Quản Lý Tủ Đồ
+            </h1>
+
+            <p class="text-gray-500 mt-2 text-sm md:text-base">
+                Xin chào,
+                <span class="font-semibold text-indigo-600">
+                    <%= user ? user.name : 'User' %>
+                </span>
+            </p>
+        </div>
+
+        <div class="mt-4 md:mt-0 flex gap-3">
+            <a href="/clothes/list"
+               class="px-5 py-2.5 rounded-xl bg-indigo-500 text-white font-medium hover:bg-indigo-600 transition duration-300 shadow-md hover:shadow-lg">
+                 Danh sách đồ
+            </a>
+
+            <a href="/users/logout"
+               class="px-5 py-2.5 rounded-xl bg-red-500 text-white font-medium hover:bg-red-600 transition duration-300 shadow-md hover:shadow-lg">
+                 Đăng xuất
+            </a>
+        </div>
+    </div>
+
+    <!-- Form Card -->
+    <div class="max-w-2xl mx-auto bg-white shadow-2xl rounded-3xl overflow-hidden border border-gray-100">
+
+        <!-- Top Banner -->
+        <div class="bg-gradient-to-r from-indigo-500 to-blue-500 px-8 py-6 text-white">
+            <h2 class="text-3xl font-bold text-center">
+                 Thêm Quần Áo Mới
+            </h2>
+
+            <p class="text-center text-blue-100 mt-2 text-sm">
+                Lưu outfit yêu thích của bạn vào hệ thống
+            </p>
+        </div>
+
+        <!-- Form -->
+        <div class="p-8">
+
+            <form id="clothesForm" class="space-y-6">
+
+                <!-- Tên -->
+                <div>
+                    <label class="block text-gray-700 font-semibold mb-2">
+                        Tên món đồ
+                    </label>
+
+                    <input
+                        type="text"
+                        name="name"
+                        required
+                        placeholder="Ví dụ: Áo hoodie đen"
+                        class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-4 focus:ring-indigo-200 focus:border-indigo-500 transition"
+                    >
+                </div>
+
+                <!-- Hình ảnh -->
+                <div>
+                    <label class="block text-gray-700 font-semibold mb-2">
+                        URL hình ảnh
+                    </label>
+
+                    <input
+                        type="text"
+                        name="imageUrl"
+                        required
+                        placeholder="https://example.com/image.jpg"
+                        class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-4 focus:ring-indigo-200 focus:border-indigo-500 transition"
+                    >
+                </div>
+
+                <!-- Grid -->
+                <div class="grid md:grid-cols-2 gap-6">
+
+                    <!-- Loại -->
+                    <div>
+                        <label class="block text-gray-700 font-semibold mb-2">
+                            Loại quần áo
+                        </label>
+
+                        <select
+                            name="type"
+                            class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-4 focus:ring-indigo-200 focus:border-indigo-500 transition"
+                        >
+                            <option value="Áo">Áo</option>
+                            <option value="Quần">Quần</option>
+                            <option value="Áo Khoác">Áo Khoác</option>
+                            <option value="Giày">Giày</option>
+                            <option value="Mũ">Mũ</option>
+                            <option value="Dây Chuyền">Dây Chuyền</option>
+                        </select>
+                    </div>
+
+                    <!-- Mùa -->
+                    <div>
+                        <label class="block text-gray-700 font-semibold mb-2">
+                            Mùa sử dụng
+                        </label>
+
+                        <select
+                            name="season"
+                            class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-4 focus:ring-indigo-200 focus:border-indigo-500 transition"
+                        >
+                            <option value="Hè">Hè</option>
+                            <option value="Đông">Đông</option>
+                            <option value="Thu">Thu</option>
+                            <option value="Xuân">Xuân</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Buttons -->
+                <div class="pt-4 space-y-4">
+
+                    <button
+                        type="button"
+                        onclick="saveData()"
+                        class="w-full bg-gradient-to-r from-indigo-500 to-blue-500 text-white py-3 rounded-xl font-semibold text-lg hover:scale-[1.01] hover:shadow-xl transition duration-300"
+                    >
+                         Lưu món đồ
+                    </button>
+
+                    <a
+                        href="/clothes/list"
+                        class="block text-center w-full border border-indigo-500 text-indigo-600 py-3 rounded-xl font-semibold hover:bg-indigo-50 transition duration-300"
+                    >
+                         Xem danh sách tủ đồ
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+async function saveData() {
+
+    const form = document.getElementById('clothesForm');
+
+    const formData = new FormData(form);
+
+    const data = Object.fromEntries(formData.entries());
+
+    try {
+
+        const response = await fetch('/clothes/add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        alert(result.message);
+
+        if (result.success) {
+            form.reset();
+        }
+
+    } catch (error) {
+
+        alert('Có lỗi xảy ra!');
+    }
+}
+</script>
+```
